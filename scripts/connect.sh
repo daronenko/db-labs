@@ -1,6 +1,7 @@
 #!/bin/sh
 
-set USER dan
-set DB "$1"
+USER=root
+PASSWORD=1234
+DB_NAME=$1
 
-psql -h localhost -d "$DB" -U "$USER"
+psql -h localhost -d "$DB_NAME" -U $USER -a
