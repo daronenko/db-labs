@@ -5,6 +5,13 @@ SELECT ФИО FROM СОТРУДНИКИ
     WHERE НОМЕР_СТ IN (SELECT ГЛАВНЫЙ FROM РАБОТЫ)
     AND НОМЕР_СТ IN (SELECT НАЧАЛЬНИК FROM ОТДЕЛЫ);
 
+SELECT ФИО, НАЗВ_ОТ FROM СОТРУДНИКИ, ОТДЕЛЫ
+    WHERE НОМЕР_СТ IN (SELECT ГЛАВНЫЙ FROM РАБОТЫ)
+    AND НОМЕР_СТ IN (SELECT НАЧАЛЬНИК FROM ОТДЕЛЫ)
+GROUP BY ФИО;
+
+SELECT ФИО, НАЗВ_ОТ FROM СОТРУДНИКИ, ОТДЕЛЫ WHERE НОМЕР_СТ IN (SELECT ГЛАВНЫЙ FROM РАБОТЫ) AND НОМЕР_СТ IN (SELECT НАЧАЛЬНИК FROM ОТДЕЛЫ) GROUP BY ФИО;
+
 SELECT ФИО FROM СОТРУДНИКИ
     WHERE НОМЕР_СТ IN (SELECT ГЛАВНЫЙ FROM РАБОТЫ
         INNER JOIN ОТДЕЛЫ
@@ -34,12 +41,13 @@ SELECT ФИО FROM СОТРУДНИКИ
     WHERE РУКОВОД IN (SELECT НАЧАЛЬНИК FROM ОТДЕЛЫ);
 
 -- 2. Сколько работ выполняет каждый отдел
-SELECT COUNT(НОМЕР_СТ) AS jobs_count, ОТДЕЛ FROM СОТРУДНИКИ
-    WHERE НОМЕР_СТ IN (SELECT ГЛАВНЫЙ FROM РАБОТЫ)
-GROUP BY ОТДЕЛ;
+SELECT "ОТДЕЛЫ"."НАЗВ_ОТ", (
+    SELECT COUNT(*) FROM "СПИСКИ_СТ"
+        WHERE "СПИСКИ_СТ"."СОТР" IN (SELECT "СОТРУДНИКИ"."НОМЕР_СТ" FROM "СОТРУДНИКИ"
+            WHERE "СОТРУДНИКИ"."ОТДЕЛ" = "ОТДЕЛЫ"."НОМЕР_ОТ")
+) AS "КОЛИЧЕСТВО_РАБОТ" FROM "ОТДЕЛЫ";
 
 -- 3. Главные по работам, получающие заработную плату большую, чем их начальник отдела
-
 SELECT employees_1.ФИО FROM СОТРУДНИКИ employees_1
     WHERE employees_1.ЗАРПЛАТА > (SELECT employees_2.ЗАРПЛАТА FROM СОТРУДНИКИ AS employees_2
         WHERE employees_2.НОМЕР_СТ = (SELECT department.НАЧАЛЬНИК FROM ОТДЕЛЫ AS department
