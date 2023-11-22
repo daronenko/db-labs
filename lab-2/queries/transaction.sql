@@ -1,21 +1,24 @@
-BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 
-UPDATE installations SET uninstallation_date = CURRENT_DATE
-WHERE user_id IN (
-    SELECT users.id FROM users
-        WHERE users.country = (
-            SELECT countries.id FROM countries
-                WHERE countries.name = 'Wales'
-        )
-);
+DELETE FROM store.purchase_history
+WHERE user_id = 'e1d4abfd-4e20-4cb3-8f03-5371fbe39e65'
+    AND software_id = '88d5b381-d9ba-4d6d-b741-d24ee0684b7c'
+RETURNING *;
 
-DELETE FROM users
-WHERE users.id IN (
-    SELECT users.id FROM users
-        WHERE users.country = (
-            SELECT countries.id FROM countries
-                WHERE countries.name = 'Wales'
-        )
-);
+WITH new_software AS (
+  SELECT software_id AS id
+  FROM store.reviews
+  WHERE rating >=
+)
 
-END;
+INSERT INTO store.purchase_history (id, user_id, software_id, price, purchase_date)
+VALUES uuid_generate_v4(), 'e1d4abfd-4e20-4cb3-8f03-5371fbe39e65', new_software.id, 0, CURRENT_DATE
+FROM (
+    SELECT software_id AS id
+    FROM store.reviews
+    WHERE rating >= 3
+    ORDER BY random()
+    LIMIT 1
+) AS new_software;
+
+COMMIT;

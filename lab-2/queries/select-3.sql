@@ -1,6 +1,12 @@
--- Получить список всех установок продуктов, которые были установлены после определенной даты, включая информацию о пользователе и продукте
-SELECT users.username, products.name, installations.installation_date
-FROM installations
-INNER JOIN users ON installations.user_id = users.id
-INNER JOIN products ON installations.software_id = products.id
-WHERE installations.installation_date > '2023-11-1';
+-- Получить ТОП-10 программ по рейтингу из категории "education" 
+SELECT
+    store.softwares.name AS software,
+    store.softwares.description,
+    ROUND(AVG(store.reviews.rating), 1) AS avg_rating
+FROM store.softwares
+JOIN store.reviews
+    ON store.softwares.id = store.reviews.software_id
+WHERE store.softwares.category = 'education'
+GROUP BY store.softwares.name, store.softwares.description
+ORDER BY avg_rating DESC
+LIMIT 10;

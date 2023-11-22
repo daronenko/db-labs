@@ -1,6 +1,4 @@
--- Обновление имени, фамилии и страны пользователя с определенным идентификатором
-UPDATE users SET
-    first_name = 'Ivan',
-    last_name = 'Ivanov',
-    country = (SELECT countries.id FROM countries WHERE name = 'Russia')
-WHERE id = 98;
+-- Обновить тело отзыва с указанным id
+UPDATE store.reviews
+SET review_content = jsonb_set(review_content, '{body}', '"This is a new body for my review!"')
+WHERE id = 'a5621056-ed3e-4bd2-aefe-6f4324aa9b0f';
