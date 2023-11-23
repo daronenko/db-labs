@@ -9,7 +9,7 @@ import data
 
 
 def get_countries_sql() -> List[str]:
-    QUERY_TEMPLATE = "INSERT INTO public.countries (\"name\", \"language\") " \
+    QUERY_TEMPLATE = "INSERT INTO store.countries (\"name\", \"language\") " \
                      "VALUES ('{}', '{}');"
 
     queries = [
