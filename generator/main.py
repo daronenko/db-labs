@@ -8,6 +8,10 @@ import wonderwords
 import data
 
 
+user_ids: List[str] = []
+software_ids: List[str] = []
+
+
 def get_countries_sql() -> List[str]:
     QUERY_TEMPLATE = "INSERT INTO store.countries (\"name\", \"language\") " \
                      "VALUES ('{}', '{}');"
@@ -147,7 +151,7 @@ class Software:
     @staticmethod
     def _gen_description() -> str:
         rs = wonderwords.RandomSentence()
-        return rs.sentence()
+        return filter_str(rs.sentence())
 
     @staticmethod
     def _gen_category() -> str:
@@ -158,7 +162,7 @@ class Software:
         rw = wonderwords.RandomWord()
         tags = '{' + ', '.join([
             rw.word(include_parts_of_speech=["nouns"])
-            for _ in range(random.randint(0, 5))
+            for _ in range(random.randint(0, 3))
         ]) + '}'
         return filter_str(tags)
 
@@ -346,19 +350,19 @@ def save(queries: List[str], path: str, *, create_new: bool = True) -> None:
 if __name__ == '__main__':
     queries = []
 
-    # filename = '../big-dump.sql'
-    # buckets_count = 10
-    # users_count = 200_000
-    # softwares_count = 900
-    # purchases_count = 400_000
-    # reviews_count = 100_000
+    filename = '../big-dump.sql'
+    buckets_count = 5
+    users_count = 300_000  # 1_500_000
+    softwares_count = 100_000  # 500_000
+    purchases_count = 2_000_000  # 10_000_000
+    reviews_count = 400_000  # 2_000_000
 
-    filename = '../test-dump.sql'
-    buckets_count = 1
-    users_count = 3000
-    softwares_count = 500
-    purchases_count = 4000
-    reviews_count = 700
+    # filename = '../small-dump.sql'
+    # buckets_count = 5
+    # users_count = 3_000  # 1_500_000
+    # softwares_count = 1_000  # 500_000
+    # purchases_count = 20_000  # 10_000_000
+    # reviews_count = 4_000  # 2_000_000
 
     queries.extend(get_countries_sql())
     save(queries, filename)
@@ -367,13 +371,6 @@ if __name__ == '__main__':
     for bucket in range(buckets_count):
         queries.clear()
 
-        for i in range(users_count):
-            if i > 0 and i % 20_000 == 0:
-                print(f'[debug]: users generated {int(i / users_count * 100)}%')
-            queries.append(User().get_sql())
-        else:
-            print('[debug]: users generated')
-
         for i in range(softwares_count):
             if i > 0 and i % 20_000 == 0:
                 print(f'[debug]: softwares generated {int(i / softwares_count * 100)}%')
@@ -381,18 +378,24 @@ if __name__ == '__main__':
         else:
             print('[debug]: softwares completed')
 
-        global user_ids, software_ids
-        user_ids = tuple(User._uuids)
-        software_ids = tuple(Software._uuids)
+        for i in range(users_count):
+            if i > 0 and i % 50_000 == 0:
+                print(f'[debug]: users generated {int(i / users_count * 100)}%')
+            queries.append(User().get_sql())
+        else:
+            print('[debug]: users generated')
+
+        user_ids.extend(User._uuids)
+        software_ids.extend(Software._uuids)
 
         for i in range(purchases_count):
-            if i > 0 and i % 20_000 == 0:
+            if i > 0 and i % 50_000 == 0:
                 print(f'[debug]: purchases generated {int(i / purchases_count * 100)}%')
             queries.append(Purchase().get_sql())
         print('[debug]: purchases completed')
 
         for i in range(reviews_count):
-            if i > 0 and i % 20_000 == 0:
+            if i > 0 and i % 50_000 == 0:
                 print(f'[debug]: reviews generated {int(i / reviews_count * 100)}%')
             queries.append(Review().get_sql())
         else:
