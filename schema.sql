@@ -107,7 +107,7 @@ CREATE TABLE "store"."reviews" (
     "review_date" date NOT NULL
 );
 
-ALTER TABLE "store"."users" ADD FOREIGN KEY ("country") REFERENCES "countries" ("id") ON DELETE CASCADE;
+ALTER TABLE "store"."users" ADD FOREIGN KEY ("country") REFERENCES "store"."countries" ("id") ON DELETE CASCADE;
 ALTER TABLE "store"."purchase_history" ADD FOREIGN KEY ("user_id") REFERENCES "store"."users" ("id") ON DELETE CASCADE;
 ALTER TABLE "store"."purchase_history" ADD FOREIGN KEY ("software_id") REFERENCES "store"."softwares" ("id") ON DELETE CASCADE;
 ALTER TABLE "store"."reviews" ADD FOREIGN KEY ("user_id") REFERENCES "store"."users" ("id") ON DELETE CASCADE;
@@ -117,11 +117,3 @@ CREATE UNIQUE INDEX idx_name ON "store"."softwares" ("name");
 CREATE INDEX idx_category ON "store"."softwares" ("category");
 CREATE INDEX idx_tags ON "store"."softwares" USING gin("tags");
 CREATE INDEX idx_rating ON "store"."reviews" ("rating");
-
-CREATE INDEX idx_name_search
-ON store.softwares
-USING gin(_name_tsvector);
-
-CREATE INDEX idx_description_search
-ON store.softwares
-USING gin(_description_tsvector);
